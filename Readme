@@ -1,0 +1,44 @@
+ML SVM Module: 
+This code performs a text classification task using Support Vector Machines (SVMs) with TF-IDF (Term Frequency-Inverse Document Frequency) features. Let's go through it step by step:
+
+Importing Libraries:
+pandas for data manipulation.
+train_test_split for splitting the dataset.
+TfidfVectorizer for converting text data into TF-IDF features.
+SVC from scikit-learn for SVM classification.
+classification_report for evaluating the classification performance.
+wordnet from NLTK for synonym replacement.
+random for random operations.
+
+Downloading NLTK Data:
+The code downloads WordNet data from NLTK. WordNet is a lexical database for the English language, which includes semantic relationships between words.
+
+Synonym Replacement Function:
+synonym_replacement function takes a text input and replaces some of its words with synonyms. It iterates over each word in the text, finds its synonyms using WordNet, and replaces the word with a randomly selected synonym. This function is used for data augmentation.
+
+Get Synonyms Function:
+get_synonyms function retrieves synonyms of a given word from WordNet and preprocesses them.
+
+Read and Preprocess Data:
+Reads a CSV file assumed to have columns 'requirement' and 'reqLabel'. 'requirement' contains textual requirements, and 'reqLabel' contains their corresponding labels.
+Determines the minority class in the labels.
+Augments the data by replacing words in requirements of the minority class with synonyms using the synonym_replacement function.
+
+Feature Extraction (TF-IDF):
+Uses TfidfVectorizer to convert the text data into TF-IDF features. It limits the number of features to 1000.
+
+Train/Test Split:
+Splits the data into training and testing sets using train_test_split.
+
+Training SVM Classifier:
+Initializes an SVM classifier with a linear kernel and trains it on the training data.
+
+Model Evaluation:
+Evaluates the trained model on the test set using the classification_report function, which provides precision, recall, F1-score, and support for each class.
+
+Prediction Example:
+Generates some new requirements.
+Augments these requirements using synonym replacement.
+Converts the augmented requirements into TF-IDF features.
+Makes predictions on the augmented requirements using the trained SVM classifier and prints the predictions.
+This code essentially demonstrates a pipeline for text classification with data augmentation using synonym replacement and evaluation of the model's performance. It's a common approach to handle imbalanced datasets and enhance the generalization capability of the model.

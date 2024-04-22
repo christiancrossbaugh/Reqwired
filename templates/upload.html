@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Page</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        #upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+        #requirements {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+        #confirmation {
+            margin-top: 10px;
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/ml">Machine Learning</a></li>
+            <li><a href="/roles">User Roles</a></li>
+            <li><a href="/integration">Integration</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Upload Page</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <textarea id="requirements" name="requirements" placeholder="Enter software requirements..."></textarea>
+            <div id="upload-area">
+                <p>Drag and drop your CSV file here, or click to select.</p>
+                <input type="file" id="csv-file" name="file" accept=".csv" style="display: none;">
+                <button type="button" id="select-csv">Select CSV</button>
+            </div>
+            <div id="confirmation"></div>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <script>
+        // Enable drag and drop functionality
+        const uploadArea = document.getElementById('upload-area');
+        const selectCsvButton = document.getElementById('select-csv');
+
+        selectCsvButton.addEventListener('click', () => {
+            const fileInput = document.getElementById('csv-file');
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            uploadArea.style.backgroundColor = '#f0f0f0';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.backgroundColor = '#ffffff';
+        });
+
+        uploadArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            uploadArea.style.backgroundColor = '#ffffff';
+
+            const fileInput = document.getElementById('csv-file');
+            fileInput.files = event.dataTransfer.files;
+
+            showConfirmation('CSV file ready to upload.');
+        });
+
+        // Show file name when selected
+        const fileInput = document.getElementById('csv-file');
+        fileInput.addEventListener('change', () => {
+            const files = fileInput.files;
+            if (files.length > 0) {
+                const fileName = files[0].name;
+                showConfirmation(`Selected file: ${fileName}`);
+            }
+        });
+
+        // Function to show confirmation message
+        function showConfirmation(message) {
+            const confirmationDiv = document.getElementById('confirmation');
+            confirmationDiv.textContent = message;
+        }
+    </script>
+</body>
+</html>

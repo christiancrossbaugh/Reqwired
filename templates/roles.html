@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Roles</title>
+</head>
+<body>
+    <h1>User Roles</h1>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+        {% for username, user in users.items() %}
+            <tr>
+                <td>{{ username }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    {% if user.role == 'user' %}
+                        <form action="/change_role" method="post">
+                            <input type="hidden" name="username" value="{{ username }}">
+                            <button type="submit">Promote to Admin</button>
+                        </form>
+                    {% endif %}
+                    {% if user.role == 'admin' %}
+                        Admin
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning Results</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/ml">Machine Learning</a></li>
+            <li><a href="/roles">User Roles</a></li>
+            <li><a href="/integration">Integration</a></li>
+        </ul>
+    </nav>
+    <h1>Machine Learning Results</h1>
+    <div id="comparison-results">
+        <h2>Comparison of Results</h2>
+        {% for name, result_html in comparison_results.items() %}
+            <h3>{{ name }}</h3>
+            {{ result_html|safe }}
+        {% endfor %}
+    </div>
+</body>
+</html>
