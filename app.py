@@ -1,6 +1,7 @@
 import nltk
 nltk.download('wordnet')
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -16,6 +17,7 @@ import io
 import sys
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
 # Function for synonym replacement data augmentation
 def synonym_replacement(text, n=2):
@@ -66,8 +68,7 @@ def home():
 # Route for the machine learning tab
 @app.route('/ml')
 def machine_learning():
-    # Run your machine learning program here and pass the results to the template
-    results = {}  # Replace with your machine learning results
+    results = {} 
     return render_template('ml.html', results=results)
 
 # Route for uploading CSV
@@ -142,20 +143,79 @@ def upload():
         comparison_results = {}
         for name, report in classification_reports.items():
             comparison_results[name] = pd.DataFrame(report).transpose().to_html()
+        
 
-        return render_template('ml.html', comparison_results=comparison_results)
-
+        return render_template('ml_results.html', comparison_results=comparison_results)
     return render_template('upload.html')
 # Route for user role management
 @app.route('/roles')
 def roles():
-    # Implement user role management logic here
     return render_template('roles.html', users=users)
 
 # Route for integration with external services
-@app.route('/integration')
-def integration():
-    return render_template('integration.html')
+@app.route('/integrations')
+def integrations():
+    return render_template('integrations.html')
+
+# Database of users
+users = {
+    'user1': {'username': 'user1', 'password': generate_password_hash('password1'), 'role': 'user'},
+    'admin1': {'username': 'admin1', 'password': generate_password_hash('adminpassword1'), 'role': 'admin'}
+}
+
+@app.route('/')
+def index():
+    if 'username' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+@app.route('/ml_results')
+def ml_results():
+
+    return render_template('ml_results.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = users.get(username)
+        if user and check_password_hash(user['password'], password):
+            session['username'] = username
+            session['role'] = user['role']
+            return redirect(url_for('dashboard'))
+        else:
+            return render_template('login.html', error='Invalid username or password')
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    session.pop('role', None)
+    return redirect(url_for('login'))
+
+@app.route('/dashboard')
+def dashboard():
+    if 'username' in session:
+        if session['role'] == 'admin':
+            return render_template('admin_dashboard.html', username=session['username'])
+        else:
+            return render_template('user_dashboard.html', username=session['username'])
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/create_user', methods=['GET', 'POST'])
+def create_user():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+        if username not in users:
+            users[username] = {'username': username, 'password': generate_password_hash(password), 'role': role}
+            return redirect(url_for('dashboard'))
+        else:
+            return render_template('create_user.html', error='Username already exists')
+    return render_template('create_user.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
